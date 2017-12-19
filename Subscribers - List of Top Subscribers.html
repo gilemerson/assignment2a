@@ -1,0 +1,180 @@
+<!--
+    Name: Gil Emerson (200186807)
+    Assignment 2a
+-->
+
+<!--
+Table of contents 
+1. Use fetch( ).then( ).catch( ) 	- Function fetch1() 		- Line 88
+2. Use async/await/fetch 			- Function fetch2() 		- Line 102
+3. Use geolocation browser API		- Function getLocation()	- Line 115	 
+4. Use audio browser API			- Function runAudio()	- Line 124
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Subscribers - List of Top Subscribers</title>
+    <meta name="viewport" content="width=device-width">
+    
+    <!-- site.css files-->
+    <link href="./Subscribers - List of Top Subscribers_files/site.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="body">
+
+        <section class="featured">
+            <div class="content-wrapper">
+                <hgroup class="title">
+                    <h1>Subscribers - </h1>
+                    <h2>List of Top Subscribers</h2>
+                </hgroup>
+
+            </div>
+        </section>
+
+        <section class="content-wrapper main-content clear-fix">
+
+            <style type="text/css">
+                ul {
+                    display: table;
+                    list-style: none;
+                    padding: 0;
+                }
+
+                ul li {
+                    display: inline-block;
+                    padding: 5px;
+                }
+
+                span:before {
+                    content: '\a';
+                    white-space: pre;
+                }
+            </style>
+
+            <div id="mapContainer" style="height:300px;width:100%">
+                <audio id="audio" controls="controls" hidden="">
+                    <source src="./Subscribers - List of Top Subscribers_files/Audio/Aud01.mp3" type="audio/mpeg">
+                </audio>
+                <div id="chart">
+                    <div id="divLocations">
+                        <input id="buttonfetch1" type="button" value="Get Subscribers using Fetch()">
+                        <input id="buttonfetch2" type="button" value="Get Subscribers using Async/Await()">
+                        <input id="buttonlocation" type="button" value="Get My Location">
+                        <input id="buttonAudio" type="button" value="Run Audio">
+                    </div>
+                    <p id="location"></p>
+                    <div id="divSubscribers">
+                        <h1>Subscribers</h1>
+                        <ul id="subscribers"></ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <script type="text/javascript">
+                const url = 'https://randomuser.me/api/?results=18';
+                const ul = document.getElementById('subscribers');
+                const x = document.getElementById("location");
+
+                //Add event listners after DOM is loaded
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.getElementById('buttonfetch1').addEventListener('click', fetch1);
+                    document.getElementById('buttonfetch2').addEventListener('click', fetch2);
+                    document.getElementById('buttonlocation').addEventListener('click', getLocation);
+                    document.getElementById('buttonAudio').addEventListener('click', runAudio);
+                }, false);
+
+                //Function to call REST API through fetch > then > catch model of obtaining JSON data
+                function fetch1() {
+                    fetch(url, {
+                        method: 'get'
+                    })
+                        .then((response) => response.json())
+                        .then(function (response) {
+                            renderSubscriber(response);
+                        })
+                        .catch(function (err) {
+                            alert(err);
+                        });
+                }
+
+                //Function to call REST API through async/await/fetch model of obtaining JSON data
+                async function fetch2() {
+                    // await response of fetch call
+                    let response = await fetch(url, {
+                        method: 'get'
+                    });
+                    // only proceed once promise is resolved
+                    let data = await response.json();
+                    // only proceed once second promise is resolved
+                    renderSubscriber(data)
+                    //return data;
+                }
+
+                //Function to get geolocation using browser API
+                function getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(showPosition);
+                    } else {
+                        x.innerHTML = 'Geolocation is not supported by this browser.';
+                    }
+                }
+
+                //Function to run audio using browser API
+                function runAudio() {
+                    let audio = document.getElementById('audio');
+                    audio.currentTime = 0;
+                    audio.play();
+                }
+
+                //Function to render subscribers - Used in fetch1 and fetch2
+                function renderSubscriber(response) {
+                    ul.innerHTML = '';
+                    let subscribers = response.results;
+                    return subscribers.map(function (subscriber) {
+                        let li = createNode('li'),
+                            img = createNode('img'),
+                            span = createNode('span');
+                        img.src = subscriber.picture.medium;
+                        span.innerHTML = '   ' + subscriber.name.first + ' ' + subscriber.name.last;
+                        append(li, img);
+                        append(li, span);
+                        append(ul, li);
+                    })
+                }
+
+                //Function to create HTML node - Used in renderSubscriber
+                function createNode(element) {
+                    return document.createElement(element); // Create the type of element you pass in the parameters
+                }
+
+                //Function to add HTML node - Used in renderSubscriber
+                function append(parent, el) {
+                    return parent.appendChild(el); // Append the second parameter(element) to the first one
+                }
+
+                //Function to show position in alert - Used in getLocation
+                function showPosition(position) {
+                    alert('Your current geo co-ordinates are - \n1. Latitude: ' + position.coords.latitude + '\n2. Longitude: ' + position.coords.longitude);
+                }
+
+
+            </script>
+
+        </section>
+    </div>
+    <footer>
+        <div class="content-wrapper">
+            <div class="float-left">
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
